@@ -1,0 +1,11 @@
+fastapi
+uvicorn[standard]
+sqlalchemy
+asyncpg
+pydantic
+pydantic-settings
+python-jose[cryptography]
+passlib[argon2]
+argon2-cffi
+python-multipart
+alembic
