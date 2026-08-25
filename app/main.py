@@ -3,7 +3,7 @@ from sqlalchemy import select
 from fastapi.middleware.cors import CORSMiddleware
 
 
-from app.routers import sales, products, cashier, auth, users, stock, reports, backup
+from app.routers import sales, products, cashier, auth, users, stock, reports, backup, settings as settings_router
 from app.database import engine, Base, SessionLocal
 from app.models import User
 from app.auth import get_password_hash
@@ -67,6 +67,7 @@ app.include_router(users.router)
 app.include_router(stock.router)
 app.include_router(reports.router)
 app.include_router(backup.router)
+app.include_router(settings_router.router)
 
 @app.get("/")
 async def root():

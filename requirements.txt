@@ -9,3 +9,11 @@ passlib[argon2]
 argon2-cffi
 python-multipart
 alembic
+
+# Dependências para NFC-e (PyNFe)
+PyNFe
+requests
+lxml
+signxml
+cryptography
+pyOpenSSL

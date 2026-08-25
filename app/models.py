@@ -51,6 +51,14 @@ class Product(Base):
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     is_weighted: Mapped[bool] = mapped_column(Boolean, default=False, nullable=True)
 
+    # Campos Fiscais NFC-e
+    ncm: Mapped[str] = mapped_column(String(8), nullable=True)
+    cest: Mapped[str] = mapped_column(String(7), nullable=True)
+    cfop: Mapped[str] = mapped_column(String(4), default="5102")
+    unidade_medida: Mapped[str] = mapped_column(String(4), default="UN")
+    origem: Mapped[str] = mapped_column(String(1), default="0")
+    csosn_icms: Mapped[str] = mapped_column(String(3), default="102")
+
 class CashierSession(Base):
     __tablename__ = "cashier_sessions"
 
@@ -76,6 +84,13 @@ class Sale(Base):
     payment_method: Mapped[str] = mapped_column(String) # dinheiro, credito, debito, pix
     timestamp: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     status: Mapped[SaleStatus] = mapped_column(Enum(SaleStatus), default=SaleStatus.COMPLETED)
+
+    # Campos de Retorno NFC-e
+    nfce_chave: Mapped[str] = mapped_column(String, nullable=True, index=True)
+    nfce_numero: Mapped[int] = mapped_column(nullable=True)
+    nfce_protocolo: Mapped[str] = mapped_column(String, nullable=True)
+    nfce_status: Mapped[str] = mapped_column(String, default="pendente") # pendente, autorizada, rejeitada
+    nfce_xml: Mapped[str] = mapped_column(String, nullable=True) # XML autorizado para reimpressão
 
     seller = relationship("User", back_populates="sales")
     session = relationship("CashierSession", back_populates="sales")

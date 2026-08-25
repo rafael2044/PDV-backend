@@ -20,7 +20,14 @@ class ProductBase(BaseModel):
     category: Optional[str] = None
     min_stock: float = 5.0
     is_active: bool = True
-    is_weighted: bool = False # <--- NOVO CAMPO
+    is_weighted: bool = False
+    # Campos Fiscais NFC-e
+    ncm: Optional[str] = None
+    cest: Optional[str] = None
+    cfop: str = "5102"
+    unidade_medida: str = "UN"
+    origem: str = "0"
+    csosn_icms: str = "102"
 
 
 class ProductCreate(ProductBase):
@@ -41,7 +48,14 @@ class ProductUpdate(BaseModel):
     category: Optional[str] = None
     min_stock: float = 5.0
     is_active: Optional[bool] = None
-    is_weighted: Optional[bool] = None # <--- NOVO CAMPO
+    is_weighted: Optional[bool] = None
+    # Campos Fiscais NFC-e
+    ncm: Optional[str] = None
+    cest: Optional[str] = None
+    cfop: str = "5102"
+    unidade_medida: str = "UN"
+    origem: str = "0"
+    csosn_icms: str = "102"
 
 class UserResponse(BaseModel):
     id: int
@@ -80,6 +94,12 @@ class SaleResponse(BaseModel):
     status: SaleStatus
     items: List[SaleItemResponse]
     seller: Optional[UserResponse] = None
+    # Campos NFC-e
+    nfce_chave: Optional[str] = None
+    nfce_numero: Optional[int] = None
+    nfce_protocolo: Optional[str] = None
+    nfce_status: str = "pendente"
+    nfce_xml: Optional[str] = None
     class Config:
         from_attributes = True
 

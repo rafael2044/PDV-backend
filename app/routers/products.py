@@ -141,6 +141,17 @@ async def update_product(
 
     if product_update.is_active is not None:
         db_product.is_active = product_update.is_active
+    
+    if product_update.is_weighted is not None:
+        db_product.is_weighted = product_update.is_weighted
+    
+    # Atualiza campos fiscais
+    db_product.ncm = product_update.ncm
+    db_product.cest = product_update.cest
+    db_product.cfop = product_update.cfop
+    db_product.unidade_medida = product_update.unidade_medida
+    db_product.origem = product_update.origem
+    db_product.csosn_icms = product_update.csosn_icms
 
     await db.commit()
     await db.refresh(db_product)
