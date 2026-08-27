@@ -2,6 +2,7 @@ fastapi
 uvicorn[standard]
 sqlalchemy
 asyncpg
+aiosqlite
 pydantic
 pydantic-settings
 python-jose[cryptography]

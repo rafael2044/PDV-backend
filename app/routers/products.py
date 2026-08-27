@@ -1,7 +1,7 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, delete
-from typing import List
+from sqlalchemy import select, delete, func
+from typing import List, Optional
 from app.database import get_db
 from app import models, schemas
 from app.dependencies import get_current_user, allow_admin_only, allow_manager
@@ -9,24 +9,51 @@ from app.dependencies import get_current_user, allow_admin_only, allow_manager
 router = APIRouter(prefix="/products", tags=["Products"])
 
 # Listar Produtos (Para o Frontend carregar a lista de seleção)
-@router.get("/", response_model=List[schemas.ProductResponse])
+@router.get("/", response_model=schemas.PaginatedProductResponse)
 async def read_products(
     skip: int = 0, 
     limit: int = 100, 
-    active_only: bool = False, # <--- Novo Parâmetro
+    active_only: bool = False,
+    search: Optional[str] = None,
+    barcode: Optional[str] = None,
     db: AsyncSession = Depends(get_db),
     current_user: models.User = Depends(get_current_user)
 ):
     query = select(models.Product)
+    count_query = select(func.count()).select_from(models.Product)
     
     # Se o front pedir active_only=true, filtramos
     if active_only:
         query = query.where(models.Product.is_active == True)
-        
+        count_query = count_query.where(models.Product.is_active == True)
+    
+    # Busca por nome (LIKE)
+    if search:
+        query = query.where(models.Product.name.ilike(f"%{search}%"))
+        count_query = count_query.where(models.Product.name.ilike(f"%{search}%"))
+    
+    # Busca exata por barcode
+    if barcode:
+        query = query.where(models.Product.barcode == barcode)
+        count_query = count_query.where(models.Product.barcode == barcode)
+    
+    # Conta total de registros
+    total_result = await db.execute(count_query)
+    total = total_result.scalar()
+    
+    # Aplica paginação
     query = query.offset(skip).limit(limit)
     
     result = await db.execute(query)
-    return result.scalars().all()
+    items = result.scalars().all()
+    
+    return schemas.PaginatedProductResponse(
+        items=items,
+        total=total,
+        page=(skip // limit) + 1,
+        page_size=limit,
+        total_pages=(total + limit - 1) // limit
+    )
 
 @router.get("/{product_id}", response_model=schemas.ProductResponse)
 async def read_product(product_id: int, db: AsyncSession = Depends(get_db),

@@ -33,6 +33,13 @@ class ProductResponse(ProductBase):
     class Config:
         from_attributes = True
 
+class PaginatedProductResponse(BaseModel):
+    items: List[ProductResponse]
+    total: int
+    page: int
+    page_size: int
+    total_pages: int
+
 class ProductUpdate(BaseModel):
     name: str
     barcode: Optional[str] = None
